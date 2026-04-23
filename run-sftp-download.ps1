@@ -55,13 +55,18 @@ if (-not (Test-Path -LiteralPath $TargetPath)) {
 
 $scriptDir = Split-Path -Parent $PSCommandPath
 $logDir = Join-Path $scriptDir "logs"
+$tempDir = Join-Path $scriptDir "temp"
 
 if (-not (Test-Path -LiteralPath $logDir)) {
     New-Item -ItemType Directory -Path $logDir -Force | Out-Null
 }
 
+if (-not (Test-Path -LiteralPath $tempDir)) {
+    New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
+}
+
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
-$winscpScriptPath = Join-Path $env:TEMP "winscp-$timestamp.txt"
+$winscpScriptPath = Join-Path $tempDir "winscp-$timestamp.txt"
 $sessionLogPath = Join-Path $logDir "winscp-session-$timestamp.log"
 $xmlLogPath = Join-Path $logDir "winscp-transfer-$timestamp.xml"
 
@@ -92,14 +97,31 @@ $winscpScript = @(
 Set-Content -LiteralPath $winscpScriptPath -Value $winscpScript -Encoding ASCII
 
 try {
-    & $WinScpPath `
-        "/ini=nul" `
-        "/log=$sessionLogPath" `
-        "/xmllog=$xmlLogPath" `
+    $argumentList = @(
+        "/ini=nul"
+        "/log=$sessionLogPath"
+        "/xmllog=$xmlLogPath"
         "/script=$winscpScriptPath"
+    )
 
-    if ($LASTEXITCODE -ne 0) {
-        throw "WinSCP ist mit Exit-Code $LASTEXITCODE fehlgeschlagen. Siehe Log: $sessionLogPath"
+    $process = Start-Process `
+        -FilePath $WinScpPath `
+        -ArgumentList $argumentList `
+        -Wait `
+        -PassThru `
+        -NoNewWindow
+
+    $exitCode = $process.ExitCode
+
+    if ($exitCode -ne 0) {
+        $sessionLogExists = Test-Path -LiteralPath $sessionLogPath
+        $xmlLogExists = Test-Path -LiteralPath $xmlLogPath
+
+        if ($sessionLogExists -or $xmlLogExists) {
+            throw "WinSCP ist mit Exit-Code $exitCode fehlgeschlagen. Session-Log: $sessionLogPath | XML-Log: $xmlLogPath"
+        }
+
+        throw "WinSCP ist mit Exit-Code $exitCode fehlgeschlagen, aber es wurde kein Log geschrieben. Bitte pruefe WinScpPath, Berechtigungen auf den Skriptordner und ob WinSCP unter dem Task-Benutzer gestartet werden darf."
     }
 
     Write-Host "Download erfolgreich abgeschlossen."

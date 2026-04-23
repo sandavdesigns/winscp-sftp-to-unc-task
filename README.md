@@ -79,3 +79,9 @@ Empfehlungen im Taskplaner:
 - UNC-Pfade funktionieren nur, wenn das Task-Konto wirklich auf die Freigabe zugreifen darf.
 - Netzlaufwerke wie `Z:` besser **nicht** verwenden, sondern direkt `\\server\share\...`.
 - Falls du statt kompletter Synchronisation nur einzelne Dateien ziehen willst, kann das Skript leicht angepasst werden.
+
+## Troubleshooting
+
+- Wenn kein WinSCP-Log erzeugt wird, ist WinSCP oft gar nicht gestartet. Dann zuerst `WinScpPath` pruefen.
+- Das Skript schreibt temporaere Dateien jetzt in einen lokalen Unterordner `temp` neben dem Skript. Das ist fuer geplante Aufgaben oft stabiler als `%TEMP%`.
+- Die geplante Aufgabe sollte mit einem Benutzer laufen, der Schreibrechte auf den Skriptordner, den UNC-Pfad und die `*.ppk` hat.
