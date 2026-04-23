@@ -8,6 +8,7 @@ $PrivateKeyPath = "C:\Keys\mein-key.ppk"
 $PrivateKeyPassphrase = ""
 $RemotePath = "/export"
 $TargetPath = "\\fileserver\import\sftp"
+$WorkingDirectory = "C:\SftpTransferTask"
 $HostKeyFingerprint = ""
 $DeleteRemoteFilesAfterDownload = $false
 
@@ -45,6 +46,7 @@ Test-ConfigValue -Value $SftpUser -Label "SftpUser"
 Test-ConfigValue -Value $PrivateKeyPath -Label "PrivateKeyPath"
 Test-ConfigValue -Value $RemotePath -Label "RemotePath"
 Test-ConfigValue -Value $TargetPath -Label "TargetPath"
+Test-ConfigValue -Value $WorkingDirectory -Label "WorkingDirectory"
 
 Test-RequiredPath -Path $WinScpPath -Label "WinSCP"
 Test-RequiredPath -Path $PrivateKeyPath -Label "Private Key"
@@ -53,9 +55,12 @@ if (-not (Test-Path -LiteralPath $TargetPath)) {
     New-Item -ItemType Directory -Path $TargetPath -Force | Out-Null
 }
 
-$scriptDir = Split-Path -Parent $PSCommandPath
-$logDir = Join-Path $scriptDir "logs"
-$tempDir = Join-Path $scriptDir "temp"
+$logDir = Join-Path $WorkingDirectory "logs"
+$tempDir = Join-Path $WorkingDirectory "temp"
+
+if (-not (Test-Path -LiteralPath $WorkingDirectory)) {
+    New-Item -ItemType Directory -Path $WorkingDirectory -Force | Out-Null
+}
 
 if (-not (Test-Path -LiteralPath $logDir)) {
     New-Item -ItemType Directory -Path $logDir -Force | Out-Null

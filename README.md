@@ -19,6 +19,7 @@ Fuer den Windows-Taskplaner ist das meist die stabilste Loesung.
    - optional `PrivateKeyPassphrase`, falls die `*.ppk` passwortgeschuetzt ist
    - `RemotePath` auf dem SFTP
    - `TargetPath` als UNC-Pfad, z. B. `\\server\freigabe\eingang`
+   - `WorkingDirectory`, z. B. `C:\SftpTransferTask`
    - optional `HostKeyFingerprint`
    - optional `DeleteRemoteFilesAfterDownload = $true`
 
@@ -41,6 +42,7 @@ $PrivateKeyPath = "C:\Keys\mein-key.ppk"
 $PrivateKeyPassphrase = ""
 $RemotePath = "/export"
 $TargetPath = "\\fileserver\import\sftp"
+$WorkingDirectory = "C:\SftpTransferTask"
 $HostKeyFingerprint = ""
 $DeleteRemoteFilesAfterDownload = $false
 ```
@@ -76,6 +78,7 @@ Empfehlungen im Taskplaner:
 
 - Wenn der Server einen **Host Key Fingerprint** vorgibt, trag ihn in der Skriptvariable `HostKeyFingerprint` ein. Das ist sicherer als der eingebaute Fallback `acceptnew`.
 - Wenn die `*.ppk` mit einer Passphrase geschuetzt ist, trag sie in `PrivateKeyPassphrase` ein. Wenn nicht, leer lassen.
+- Verwende fuer `WorkingDirectory`, den Skriptpfad und moeglichst auch den Key-Pfad am besten keine Umlaute oder Sonderzeichen.
 - UNC-Pfade funktionieren nur, wenn das Task-Konto wirklich auf die Freigabe zugreifen darf.
 - Netzlaufwerke wie `Z:` besser **nicht** verwenden, sondern direkt `\\server\share\...`.
 - Falls du statt kompletter Synchronisation nur einzelne Dateien ziehen willst, kann das Skript leicht angepasst werden.
@@ -83,5 +86,5 @@ Empfehlungen im Taskplaner:
 ## Troubleshooting
 
 - Wenn kein WinSCP-Log erzeugt wird, ist WinSCP oft gar nicht gestartet. Dann zuerst `WinScpPath` pruefen.
-- Das Skript schreibt temporaere Dateien jetzt in einen lokalen Unterordner `temp` neben dem Skript. Das ist fuer geplante Aufgaben oft stabiler als `%TEMP%`.
+- Das Skript schreibt temporaere Dateien und Logs jetzt in `WorkingDirectory`, z. B. `C:\SftpTransferTask`. Verwende dort keinen Pfad mit Umlauten.
 - Die geplante Aufgabe sollte mit einem Benutzer laufen, der Schreibrechte auf den Skriptordner, den UNC-Pfad und die `*.ppk` hat.
