@@ -16,6 +16,7 @@ Fuer den Windows-Taskplaner ist das meist die stabilste Loesung.
    - `SftpHost`
    - `SftpUser`
    - `PrivateKeyPath` zur `*.ppk`
+   - optional `PrivateKeyPassphrase`, falls die `*.ppk` passwortgeschuetzt ist
    - `RemotePath` auf dem SFTP
    - `TargetPath` als UNC-Pfad, z. B. `\\server\freigabe\eingang`
    - optional `HostKeyFingerprint`
@@ -37,6 +38,7 @@ $WinScpPath = "C:\Program Files (x86)\WinSCP\WinSCP.com"
 $SftpHost = "sftp.example.com"
 $SftpUser = "meinuser"
 $PrivateKeyPath = "C:\Keys\mein-key.ppk"
+$PrivateKeyPassphrase = ""
 $RemotePath = "/export"
 $TargetPath = "\\fileserver\import\sftp"
 $HostKeyFingerprint = ""
@@ -73,6 +75,7 @@ Empfehlungen im Taskplaner:
 ## Wichtige Hinweise
 
 - Wenn der Server einen **Host Key Fingerprint** vorgibt, trag ihn in der Skriptvariable `HostKeyFingerprint` ein. Das ist sicherer als der eingebaute Fallback `acceptnew`.
+- Wenn die `*.ppk` mit einer Passphrase geschuetzt ist, trag sie in `PrivateKeyPassphrase` ein. Wenn nicht, leer lassen.
 - UNC-Pfade funktionieren nur, wenn das Task-Konto wirklich auf die Freigabe zugreifen darf.
 - Netzlaufwerke wie `Z:` besser **nicht** verwenden, sondern direkt `\\server\share\...`.
 - Falls du statt kompletter Synchronisation nur einzelne Dateien ziehen willst, kann das Skript leicht angepasst werden.

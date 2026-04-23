@@ -5,6 +5,7 @@ $WinScpPath = "C:\Program Files (x86)\WinSCP\WinSCP.com"
 $SftpHost = "sftp.example.com"
 $SftpUser = "meinuser"
 $PrivateKeyPath = "C:\Keys\mein-key.ppk"
+$PrivateKeyPassphrase = ""
 $RemotePath = "/export"
 $TargetPath = "\\fileserver\import\sftp"
 $HostKeyFingerprint = ""
@@ -70,12 +71,18 @@ $hostKeyOption = if ([string]::IsNullOrWhiteSpace($HostKeyFingerprint)) {
     "-hostkey=`"$HostKeyFingerprint`""
 }
 
+$passphraseOption = if ([string]::IsNullOrWhiteSpace($PrivateKeyPassphrase)) {
+    ""
+} else {
+    "-passphrase=`"$PrivateKeyPassphrase`""
+}
+
 $removeOption = if ($DeleteRemoteFilesAfterDownload) { "true" } else { "false" }
 
 $winscpScript = @(
     "option batch abort"
     "option confirm off"
-    "open sftp://$SftpUser@$SftpHost/ -privatekey=`"$PrivateKeyPath`" $hostKeyOption"
+    "open sftp://$SftpUser@$SftpHost/ -privatekey=`"$PrivateKeyPath`" $passphraseOption $hostKeyOption"
     "lcd `"$TargetPath`""
     "cd `"$RemotePath`""
     "synchronize local -transfer=binary -delete=$removeOption `"$TargetPath`" `"$RemotePath`""
