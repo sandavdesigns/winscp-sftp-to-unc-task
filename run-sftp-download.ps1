@@ -1,28 +1,28 @@
-param(
-    [Parameter(Mandatory = $true)]
-    [string]$WinScpPath,
-
-    [Parameter(Mandatory = $true)]
-    [string]$SftpHost,
-
-    [Parameter(Mandatory = $true)]
-    [string]$SftpUser,
-
-    [Parameter(Mandatory = $true)]
-    [string]$PrivateKeyPath,
-
-    [Parameter(Mandatory = $true)]
-    [string]$RemotePath,
-
-    [Parameter(Mandatory = $true)]
-    [string]$TargetPath,
-
-    [string]$HostKeyFingerprint = "",
-
-    [switch]$DeleteRemoteFilesAfterDownload
-)
-
 $ErrorActionPreference = "Stop"
+
+# Konfiguration
+$WinScpPath = "C:\Program Files (x86)\WinSCP\WinSCP.com"
+$SftpHost = "sftp.example.com"
+$SftpUser = "meinuser"
+$PrivateKeyPath = "C:\Keys\mein-key.ppk"
+$RemotePath = "/export"
+$TargetPath = "\\fileserver\import\sftp"
+$HostKeyFingerprint = ""
+$DeleteRemoteFilesAfterDownload = $false
+
+function Test-ConfigValue {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Value,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Label
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Value)) {
+        throw "$Label ist leer. Bitte in der Konfiguration am Skriptanfang eintragen."
+    }
+}
 
 function Test-RequiredPath {
     param(
@@ -37,6 +37,13 @@ function Test-RequiredPath {
         throw "$Label nicht gefunden: $Path"
     }
 }
+
+Test-ConfigValue -Value $WinScpPath -Label "WinScpPath"
+Test-ConfigValue -Value $SftpHost -Label "SftpHost"
+Test-ConfigValue -Value $SftpUser -Label "SftpUser"
+Test-ConfigValue -Value $PrivateKeyPath -Label "PrivateKeyPath"
+Test-ConfigValue -Value $RemotePath -Label "RemotePath"
+Test-ConfigValue -Value $TargetPath -Label "TargetPath"
 
 Test-RequiredPath -Path $WinScpPath -Label "WinSCP"
 Test-RequiredPath -Path $PrivateKeyPath -Label "Private Key"

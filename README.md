@@ -11,12 +11,15 @@ Fuer den Windows-Taskplaner ist das meist die stabilste Loesung.
      - `C:\Program Files (x86)\WinSCP\WinSCP.com`
      - oder `C:\Program Files\WinSCP\WinSCP.com`
 
-2. Diese Werte eintragen:
+2. Im Skript oben in der **Konfiguration** diese Werte eintragen:
+   - `WinScpPath`
    - `SftpHost`
    - `SftpUser`
    - `PrivateKeyPath` zur `*.ppk`
    - `RemotePath` auf dem SFTP
    - `TargetPath` als UNC-Pfad, z. B. `\\server\freigabe\eingang`
+   - optional `HostKeyFingerprint`
+   - optional `DeleteRemoteFilesAfterDownload = $true`
 
 3. Sicherstellen, dass das Konto der geplanten Aufgabe:
    - auf die `*.ppk` zugreifen darf
@@ -27,16 +30,23 @@ Fuer den Windows-Taskplaner ist das meist die stabilste Loesung.
 
 - [run-sftp-download.ps1](/Users/davidmuller/Documents/Codex/2026-04-23-ich-brauche-in-tool-poweshell-oder/run-sftp-download.ps1)
 
+## Konfiguration im Skript
+
+```powershell
+$WinScpPath = "C:\Program Files (x86)\WinSCP\WinSCP.com"
+$SftpHost = "sftp.example.com"
+$SftpUser = "meinuser"
+$PrivateKeyPath = "C:\Keys\mein-key.ppk"
+$RemotePath = "/export"
+$TargetPath = "\\fileserver\import\sftp"
+$HostKeyFingerprint = ""
+$DeleteRemoteFilesAfterDownload = $false
+```
+
 ## Beispielaufruf
 
 ```powershell
-powershell.exe -ExecutionPolicy Bypass -File "C:\Pfad\run-sftp-download.ps1" `
-  -WinScpPath "C:\Program Files (x86)\WinSCP\WinSCP.com" `
-  -SftpHost "sftp.example.com" `
-  -SftpUser "meinuser" `
-  -PrivateKeyPath "C:\Keys\mein-key.ppk" `
-  -RemotePath "/export" `
-  -TargetPath "\\fileserver\import\sftp"
+powershell.exe -ExecutionPolicy Bypass -File "C:\Pfad\run-sftp-download.ps1"
 ```
 
 ## Als geplante Aufgabe einrichten
@@ -50,7 +60,7 @@ powershell.exe
 Argumente:
 
 ```text
--ExecutionPolicy Bypass -File "C:\Pfad\run-sftp-download.ps1" -WinScpPath "C:\Program Files (x86)\WinSCP\WinSCP.com" -SftpHost "sftp.example.com" -SftpUser "meinuser" -PrivateKeyPath "C:\Keys\mein-key.ppk" -RemotePath "/export" -TargetPath "\\fileserver\import\sftp"
+-ExecutionPolicy Bypass -File "C:\Pfad\run-sftp-download.ps1"
 ```
 
 Empfehlungen im Taskplaner:
@@ -62,7 +72,7 @@ Empfehlungen im Taskplaner:
 
 ## Wichtige Hinweise
 
-- Wenn der Server einen **Host Key Fingerprint** vorgibt, trag ihn im Skriptparameter `HostKeyFingerprint` ein. Das ist sicherer als der eingebaute Fallback `acceptnew`.
+- Wenn der Server einen **Host Key Fingerprint** vorgibt, trag ihn in der Skriptvariable `HostKeyFingerprint` ein. Das ist sicherer als der eingebaute Fallback `acceptnew`.
 - UNC-Pfade funktionieren nur, wenn das Task-Konto wirklich auf die Freigabe zugreifen darf.
 - Netzlaufwerke wie `Z:` besser **nicht** verwenden, sondern direkt `\\server\share\...`.
 - Falls du statt kompletter Synchronisation nur einzelne Dateien ziehen willst, kann das Skript leicht angepasst werden.
