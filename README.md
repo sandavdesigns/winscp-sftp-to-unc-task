@@ -78,7 +78,8 @@ Empfehlungen im Taskplaner:
 
 - Wenn der Server einen **Host Key Fingerprint** vorgibt, trag ihn in der Skriptvariable `HostKeyFingerprint` ein. Das ist sicherer als der eingebaute Fallback `acceptnew`.
 - Wenn die `*.ppk` mit einer Passphrase geschuetzt ist, trag sie in `PrivateKeyPassphrase` ein. Wenn nicht, leer lassen.
-- Verwende fuer `WorkingDirectory`, den Skriptpfad und moeglichst auch den Key-Pfad am besten keine Umlaute oder Sonderzeichen.
+- Umlaute im `TargetPath` sind erlaubt. Das Skript schreibt die WinSCP-Scriptdatei deshalb explizit als UTF-8 mit BOM.
+- Fuer `WorkingDirectory`, den Skriptpfad und moeglichst auch den Key-Pfad sind einfache ASCII-Pfade trotzdem oft am robustesten.
 - UNC-Pfade funktionieren nur, wenn das Task-Konto wirklich auf die Freigabe zugreifen darf.
 - Netzlaufwerke wie `Z:` besser **nicht** verwenden, sondern direkt `\\server\share\...`.
 - Falls du statt kompletter Synchronisation nur einzelne Dateien ziehen willst, kann das Skript leicht angepasst werden.

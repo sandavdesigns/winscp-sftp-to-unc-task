@@ -99,7 +99,8 @@ $winscpScript = @(
     "exit"
 )
 
-Set-Content -LiteralPath $winscpScriptPath -Value $winscpScript -Encoding ASCII
+$utf8BomEncoding = New-Object System.Text.UTF8Encoding($true)
+[System.IO.File]::WriteAllLines($winscpScriptPath, $winscpScript, $utf8BomEncoding)
 
 try {
     $argumentList = @(
